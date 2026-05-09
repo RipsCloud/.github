@@ -1,0 +1,13 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">RipsCloud icon</title>
+  <desc id="desc">Cloud-shaped mark with an R monogram and healthcare data lines.</desc>
+  <rect width="512" height="512" rx="120" fill="#F8FAFC"/>
+  <circle cx="185" cy="232" r="86" fill="#0F766E"/>
+  <circle cx="275" cy="188" r="98" fill="#0D9488"/>
+  <circle cx="337" cy="253" r="92" fill="#0891B2"/>
+  <rect x="129" y="224" width="256" height="138" rx="69" fill="#0F766E"/>
+  <path d="M172 155h116c58 0 96 34 96 85 0 36-19 64-51 77l66 89h-82l-55-77h-18v77h-72V155Zm72 61v55h39c19 0 30-10 30-28 0-17-11-27-30-27h-39Z" fill="white"/>
+  <path d="M270 365h91" stroke="#A7F3D0" stroke-width="18" stroke-linecap="round"/>
+  <path d="M300 318h82" stroke="#CCFBF1" stroke-width="14" stroke-linecap="round"/>
+  <path d="M142 410h228" stroke="#0F766E" stroke-opacity="0.18" stroke-width="16" stroke-linecap="round"/>
+</svg>
