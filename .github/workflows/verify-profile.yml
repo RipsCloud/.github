@@ -1,4 +1,4 @@
-name: Profile source checks
+name: Sandbox profile source checks
 
 on:
   pull_request:
@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 24
           package-manager-cache: false
-      - name: Check profile source
+      - name: Check sandbox source and published baseline
         run: node scripts/verify-profile.mjs
-      - name: Test source checks
-        run: node --test tests/profile.test.mjs
+      - name: Test source and render guards
+        run: node --test tests/*.test.mjs
