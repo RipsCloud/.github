@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { buildPreview, normalizeToolModule, prepareOutputDirectory, sourceRoot, writeNewArtifact } from '../scripts/render-profile.mjs';
+import { assertPreviewGeometry, buildPreview, normalizeToolModule, prepareOutputDirectory, sourceRoot, writeNewArtifact } from '../scripts/render-profile.mjs';
 
 const icon = readFileSync(path.join(sourceRoot, 'profile/assets/ripscloud-icon.png'));
 const body = '<h1 align="center">RipsCloud</h1><img src="../../profile/assets/ripscloud-icon.png" alt="RipsCloud" width="112" height="112"><a href="https://ripscloud.com">Web</a><a href="mailto:contacto@ripscloud.com">Contacto</a><a href="https://ripscloud.com">Web</a><a href="mailto:contacto@ripscloud.com">Contacto</a>';
@@ -14,6 +14,14 @@ test('optional tool imports support ESM and CommonJS namespaces', () => {
   assert.equal(normalizeToolModule(esm), esm);
   assert.equal(normalizeToolModule({ default: cjs }), cjs);
   assert.throws(() => normalizeToolModule(null));
+});
+
+test('200-percent local geometry keeps overflow, clipping, overlap and readability assertions active', () => {
+  const metrics = { zoom: 2, contentWidth: 1280, viewportWidth: 1280, blockOverlaps: 0, clippedTextRects: 0, textBlocks: 20, minTextFontSize: 16, minEffectiveTextFontSize: 32 };
+  assert.doesNotThrow(() => assertPreviewGeometry(metrics, 2));
+  for (const change of [{ zoom: 1 }, { contentWidth: 1281 }, { blockOverlaps: 1 }, { clippedTextRects: 1 }, { textBlocks: 0 }, { minTextFontSize: 12 }, { minEffectiveTextFontSize: 12 }, { viewportWidth: NaN }]) {
+    assert.throws(() => assertPreviewGeometry({ ...metrics, ...change }, 2));
+  }
 });
 
 test('preview is self-contained and keeps the local-only marker', () => {

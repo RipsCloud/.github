@@ -20,7 +20,9 @@ git diff --check
 ```
 
 These checks cover the sandbox source, known content rules, and the published-file baseline.
+The content guard rejects known contrary claims. It does not interpret every possible sentence.
 The workflow uses pinned actions, read-only permissions and fail-fast commands.
+CI checks out the immutable PR head SHA or main push SHA. The validator compares and records HEAD.
 It has no secrets, deployment, publication, release or copy-to-profile step.
 The guard is not a separate approval control. A PR can change its own checker;
 independent review must compare its pins with the accepted baseline.
@@ -50,6 +52,7 @@ This is a neutral local Markdown preview, not an exact copy of GitHub's UI.
 For automated local browser checks, also set `PROFILE_BROWSER_MODULES` to an external
 directory with Playwright and `PROFILE_AXE_MODULES` to one with axe-core.
 Use the existing installed browser. The check does not install a browser or start a server.
+Before recording proof, freeze a clean commit and set `EXPECTED_SOURCE_SHA` to its full SHA.
 
 ```sh
 node scripts/test-profile-render.mjs /tmp/rc144-profile-browser-proof
@@ -58,6 +61,9 @@ node scripts/test-profile-render.mjs /tmp/rc144-profile-browser-proof
 The browser check keeps all assertions active at 320, 390 and 1280 pixels.
 It checks accessibility, overflow, icon loading, heading structure, keyboard focus,
 page and console errors, and external requests. Proof and screenshots stay outside source.
+It also checks 200 percent with CSS document zoom at 1280 pixels. Geometry checks cover
+overflow, text clipping, block overlap, readable text and viewport-visible keyboard focus.
+This tests the static local preview. It does not test browser UI zoom or its media-query behavior.
 This optional render check is local only. CI checks source and regression tests only.
 
 ## Published baseline and future boundary

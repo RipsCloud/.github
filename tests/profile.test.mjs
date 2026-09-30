@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { BASE_COMMIT, EXPECTED_WORKFLOW, PUBLISHED_BASELINE, readRegularFile, readSources, validateProfile, verifyPublishedBaseline } from '../scripts/verify-profile.mjs';
+import { BASE_COMMIT, EXPECTED_WORKFLOW, PUBLISHED_BASELINE, readRegularFile, readSources, validateProfile, verifyCheckedCommit, verifyPublishedBaseline } from '../scripts/verify-profile.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const fixture = readSources(root);
@@ -53,6 +53,40 @@ for (const name of ['profile/assets/ripscloud-icon.png', 'profile/assets/ripsclo
 
 test('sandbox-only text can change without altering the published baseline', () => {
   assert.doesNotThrow(() => validateProfile({ ...fixture, profile: fixture.profile + '\nNota de revisión: solo fuente sandbox.\n' }));
+});
+
+test('appending a known active hosted claim fails while all disclaimers remain', () => {
+  assert.doesNotThrow(() => validateProfile(fixture));
+  for (const claim of ['El servicio alojado está habilitado.', 'EL SERVICIO ALOJADO ESTÁ HABILITADO.', 'El servicio\n alojado está\n habilitado.', 'El servicio alojado esta\u0301 habilitado.']) {
+    assert.throws(() => validateProfile({ ...fixture, profile: fixture.profile + '\n' + claim }), { message: 'The candidate contains a known active hosted-service claim.' });
+  }
+});
+
+test('PR and main checks bind HEAD to a full immutable event SHA', () => {
+  const pr = 'a'.repeat(40);
+  const main = 'b'.repeat(40);
+  assert.equal(verifyCheckedCommit({ expected: pr, actual: pr, requireExpected: true }), pr);
+  assert.equal(verifyCheckedCommit({ expected: main, actual: main, requireExpected: true }), main);
+  assert.equal(verifyCheckedCommit({ actual: pr }), pr);
+  assert.throws(() => verifyCheckedCommit({ actual: pr, requireExpected: true }));
+  assert.throws(() => verifyCheckedCommit({ expected: pr, actual: main, requireExpected: true }));
+  for (const expected of ['', 'main', 'refs/pull/1/merge', 'a'.repeat(39), 'A'.repeat(40), 'a'.repeat(40) + '\n']) {
+    assert.throws(() => verifyCheckedCommit({ expected, actual: pr, requireExpected: true }));
+  }
+  assert.throws(() => verifyCheckedCommit({ expected: pr, actual: 'main' }));
+});
+
+test('the workflow cannot omit or alter the immutable checkout and expected SHA', () => {
+  const expression = '${{ github.event.pull_request.head.sha || github.sha }}';
+  for (const workflow of [
+    EXPECTED_WORKFLOW.replace('          ref: ' + expression + '\n', ''),
+    EXPECTED_WORKFLOW.replace('ref: ' + expression, 'ref: main'),
+    EXPECTED_WORKFLOW.replace('ref: ' + expression, 'ref: refs/pull/1/merge'),
+    EXPECTED_WORKFLOW.replace('EXPECTED_SOURCE_SHA: ' + expression, 'EXPECTED_SOURCE_SHA: ' + 'a'.repeat(40)),
+    EXPECTED_WORKFLOW.replace('          EXPECTED_SOURCE_SHA: ' + expression + '\n', ''),
+  ]) {
+    assert.throws(() => validateProfile({ ...fixture, workflow }));
+  }
 });
 
 test('known unapproved service, contact and authentication claims fail', () => {

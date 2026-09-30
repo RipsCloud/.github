@@ -50,6 +50,18 @@ export function normalizeToolModule(namespace) {
   return namespace.default ?? namespace;
 }
 
+export function assertPreviewGeometry(metrics, expectedZoom) {
+  for (const key of ['zoom', 'contentWidth', 'viewportWidth', 'blockOverlaps', 'clippedTextRects', 'textBlocks', 'minTextFontSize', 'minEffectiveTextFontSize']) {
+    assert.ok(Number.isFinite(metrics[key]), 'Render geometry must be finite.');
+  }
+  assert.equal(metrics.zoom, expectedZoom, 'The requested local CSS zoom must be applied.');
+  assert.ok(metrics.contentWidth <= metrics.viewportWidth, 'Local preview must not overflow horizontally.');
+  assert.equal(metrics.blockOverlaps, 0, 'Local preview blocks must not overlap.');
+  assert.equal(metrics.clippedTextRects, 0, 'Local preview text must not be clipped.');
+  assert.ok(metrics.textBlocks > 0, 'Check visible text blocks.');
+  assert.ok(metrics.minTextFontSize >= 16 && metrics.minEffectiveTextFontSize >= 16, 'Local preview text must remain readable.');
+}
+
 // This is a preview of checked repository source, not an untrusted Markdown service.
 export function buildPreview(body, iconBytes) {
   assert.equal(typeof body, 'string');

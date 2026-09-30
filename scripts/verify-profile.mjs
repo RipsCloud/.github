@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { lstatSync, readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -32,6 +33,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
+          ref: \${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Setup Node.js
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
@@ -39,6 +41,8 @@ jobs:
           node-version: 24
           package-manager-cache: false
       - name: Check sandbox source and published baseline
+        env:
+          EXPECTED_SOURCE_SHA: \${{ github.event.pull_request.head.sha || github.sha }}
         run: node scripts/verify-profile.mjs
       - name: Test source and render guards
         run: node --test tests/*.test.mjs
@@ -51,6 +55,17 @@ export function verifyPublishedBaseline(files) {
     assert.equal(files[name].byteLength, pin.bytes, 'A published baseline file changed size.');
     assert.equal(createHash('sha256').update(files[name]).digest('hex'), pin.sha256, 'A published baseline file changed bytes.');
   }
+}
+
+export function verifyCheckedCommit({ expected, actual, requireExpected = false }) {
+  const sha = /^[a-f0-9]{40}$/;
+  assert.ok(typeof actual === 'string' && sha.test(actual), 'The checked commit must be a full immutable SHA.');
+  assert.ok(!requireExpected || typeof expected === 'string', 'CI requires an explicit event source SHA.');
+  if (expected !== undefined) {
+    assert.ok(typeof expected === 'string' && sha.test(expected), 'The expected source must be a full immutable SHA.');
+    assert.equal(actual, expected, 'The checked commit does not match the event source SHA.');
+  }
+  return actual;
 }
 
 export function validateProfile({ profile, sandboxReadme, workflow, publishedFiles }) {
@@ -73,6 +88,8 @@ export function validateProfile({ profile, sandboxReadme, workflow, publishedFil
   assert.match(profile, /Base PahFacturar Pro: \*\*\$49\.000 COP por NIT al mes\*\*/);
   assert.match(profile, /Componente RipsCloud: propuesta de plan independiente de la base/);
   assert.match(profile, /Los totales combinados no están aprobados/);
+  const policyText = profile.normalize('NFKC').replace(/\s+/gu, ' ');
+  assert.doesNotMatch(policyText, /\bservicio alojado está habilitado\b/iu, 'The candidate contains a known active hosted-service claim.');
   assert.deepEqual(profile.match(/\$[\d.,]+\s*COP/g), ['$49.000 COP'], 'Only the approved separate base price is allowed.');
   assert.doesNotMatch(profile, /hola@ripscloud\.com|100 documentos|inyección automática de tokens|autenticación centralizada|API estable/i);
   assert.doesNotMatch(profile, /https?:\/\/(?:app|console|api|auth|docs|status)\.ripscloud\.com\b/i);
@@ -141,7 +158,15 @@ const scriptPath = fileURLToPath(import.meta.url);
 if (process.argv[1] && path.resolve(process.argv[1]) === scriptPath) {
   try {
     assert.equal(process.versions.node.split('.')[0], '24', 'Use Node.js 24.');
+    const root = path.resolve(path.dirname(scriptPath), '..');
+    const actual = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8', env: { PATH: process.env.PATH, LANG: 'C' } }).trim();
+    const checked = verifyCheckedCommit({
+      expected: process.env.EXPECTED_SOURCE_SHA,
+      actual,
+      requireExpected: process.env.GITHUB_ACTIONS === 'true' || process.env.CI === 'true',
+    });
     validateProfile(readSources());
+    console.log('Checked source commit: ' + checked);
     console.log('Sandbox source checks passed. Published README and icon bytes are unchanged. CI is read-only and fail-fast.');
   } catch {
     console.error('Sandbox profile source checks failed.');
