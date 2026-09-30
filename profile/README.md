@@ -5,88 +5,62 @@
 <h1 align="center">RipsCloud</h1>
 
 <p align="center">
-  <strong>Gestión, automatización y envío de RIPS para prestadores de salud en Colombia.</strong>
+  <strong>Preparación de flujos FEV-RIPS en Colombia. Producto en preproducción.</strong>
 </p>
 
 <p align="center">
   <a href="https://ripscloud.com">Sitio web</a>
   ·
-  <a href="https://app.ripscloud.com">App</a>
-  ·
-  <a href="https://api.ripscloud.com/swagger">API</a>
-  ·
-  <a href="mailto:hola@ripscloud.com">Contacto</a>
+  <a href="mailto:contacto@ripscloud.com">Contacto</a>
 </p>
 
-## Qué Es RipsCloud
+## Estado del producto
 
-RipsCloud es una plataforma cloud para administrar el flujo RIPS de prestadores
-de salud en Colombia. Ayuda a equipos administrativos, facturación y tecnología
-a centralizar la operación alrededor de RIPS, FEV RIPS, SISPRO y los servicios
-del Ministerio de Salud, sin exponer credenciales operativas en el navegador.
+RipsCloud está en preproducción. El trabajo actual se limita a desarrollo y
+pruebas locales o sandbox con datos ficticios. No está habilitado para operación
+productiva.
 
-El producto nace para simplificar un flujo que suele mezclar archivos,
-validaciones, credenciales, respuestas técnicas y seguimiento manual. RipsCloud
-actúa como una capa multi-tenant para organizar el acceso, automatizar llamadas
-y dar trazabilidad a los procesos relacionados con RIPS.
+Esta documentación no habilita registro de cuentas, acceso a una API gestionada
+ni una cuota gratuita de documentos en la nube. La revisión local de archivos
+no ejecuta el motor nativo del Ministerio de Salud.
 
-## A Quién Sirve
+No uses datos de pacientes ni credenciales de producción en las pruebas.
 
-- IPS, clínicas, centros médicos y consultorios que reportan RIPS en Colombia.
-- Equipos de facturación en salud que necesitan reducir reprocesos y rechazos.
-- Áreas administrativas que hacen seguimiento a envíos, CUV, respuestas y
-  evidencias.
-- Equipos técnicos que integran sistemas clínicos, facturación electrónica en
-  salud y servicios SISPRO.
+## Enfoque
 
-## Capacidades Principales
+El proyecto se dirige a prestadores de salud, IPS y equipos de facturación,
+auditoría y tecnología en Colombia. Su alcance previsto es preparar y seguir
+flujos de Factura Electrónica de Venta en salud y RIPS.
 
-- Gestión multi-tenant por prestador, sede o unidad operativa.
-- Autenticación centralizada hacia servicios FEV RIPS / SISPRO.
-- Inyección automática de tokens para llamadas operativas posteriores.
-- Reintento controlado cuando una sesión expira o una respuesta requiere
-  renovación de autenticación.
-- Consulta y automatización de endpoints relacionados con RIPS, CUV y procesos
-  de envío.
-- Base para integraciones con sistemas clínicos, historias clínicas, facturación
-  electrónica en salud y backoffices administrativos.
-- Registro técnico para trazabilidad, soporte y auditoría operacional.
+La plataforma y FEVRIPS API Managed están en desarrollo. El agente local y las
+integraciones adicionales siguen como capacidades previstas, no como servicios
+disponibles.
 
-## Contexto RIPS En Colombia
+RipsCloud es un producto de PahVenture. No pertenece al Ministerio de Salud,
+SISPRO ni DIAN. No reemplaza el Mecanismo Único de Validación y no emite el CUV
+oficial.
 
-RIPS significa Registro Individual de Prestación de Servicios de Salud. En el
-contexto colombiano, los RIPS son parte del flujo administrativo y técnico de los
-prestadores de salud y se relacionan con la Factura Electrónica de Venta en
-salud, validaciones y reportes ante entidades del sistema.
+## Condiciones de los planes previstos
 
-RipsCloud usa estos términos de forma operativa y técnica. La plataforma no
-reemplaza la asesoría normativa, tributaria o jurídica de cada prestador; está
-diseñada para ayudar a ejecutar, integrar y controlar el flujo digital.
+Todos los planes comerciales de RipsCloud requieren una suscripción activa de
+PahFacturar Pro por NIT. La base y el componente RipsCloud son líneas separadas:
 
-## Cómo Funciona
+- Base PahFacturar Pro: **$49.000 COP por NIT al mes**.
+- Componente RipsCloud: propuesta de plan independiente de la base.
 
-1. El prestador o sistema integrado entra a RipsCloud por una ruta tenant.
-2. RipsCloud centraliza el inicio de sesión operativo hacia SISPRO.
-3. La sesión se conserva en infraestructura cloud aislada por tenant.
-4. Las llamadas posteriores se envían autenticadas automáticamente.
-5. Los equipos pueden construir flujos de consulta, envío, reintento y
-   seguimiento sobre una API estable.
+La base corresponde a la referencia aprobada del 8 de septiembre de 2026.
+Los totales combinados no están aprobados. Esta página no anuncia precios
+combinados, cobro activo ni derechos de acceso productivo. La evaluación gratuita
+solo contempla datos ficticios en sandbox.
 
-## Información Pública Y Contacto
+## Información pública y contacto
 
-- Web: [ripscloud.com](https://ripscloud.com)
-- App: [app.ripscloud.com](https://app.ripscloud.com)
-- API: [api.ripscloud.com](https://api.ripscloud.com)
-- Contacto: [hola@ripscloud.com](mailto:hola@ripscloud.com)
+- Sitio web: [ripscloud.com](https://ripscloud.com)
+- Contacto: [contacto@ripscloud.com](mailto:contacto@ripscloud.com)
 - Mercado principal: Colombia
-- Industria: healthtech, software de salud, RIPS, facturación en salud
 
-## Sobre Esta Organización En GitHub
+## Sobre esta organización
 
-Esta organización publica documentación, perfiles de producto y, cuando aplique,
-SDKs o herramientas públicas alrededor de RipsCloud. Los repositorios
-operacionales y el código fuente privado del producto viven en repositorios
-privados.
-
-Si buscas soporte comercial, integración o acceso al producto, usa los canales
-públicos de contacto en [ripscloud.com](https://ripscloud.com).
+Esta organización contiene información pública de RipsCloud. La presencia de
+documentación no confirma la disponibilidad de un servicio. Para consultas
+comerciales o sobre el estado del proyecto, usa el contacto indicado arriba.
